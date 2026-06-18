@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#101820" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Kratom Log" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <title>Kratom Log</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Локальный трекер</p>
+        <h1>Kratom Log</h1>
+      </div>
+      <button id="installHintBtn" class="ghost-btn" type="button">iPhone</button>
+    </header>
+
+    <main>
+      <section class="card hero-card">
+        <div class="hero-head">
+          <div>
+            <p class="muted" id="todayLabel">Сегодня</p>
+            <div class="today-total"><span id="todayTotal">0</span><span>мл</span></div>
+          </div>
+          <div class="target-box">
+            <span>Цель</span>
+            <strong><span id="targetView">1000</span> мл</strong>
+          </div>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-bar"><div id="progressFill"></div></div>
+          <div class="progress-meta">
+            <span id="remainingText">Осталось 1000 мл до цели</span>
+            <span id="progressPercent">0%</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="card add-card">
+        <h2>Добавить прием</h2>
+        <div class="quick-grid" id="quickGrid">
+          <button data-amount="50">+50</button>
+          <button data-amount="100">+100</button>
+          <button data-amount="150">+150</button>
+          <button data-amount="200">+200</button>
+          <button data-amount="250">+250</button>
+          <button data-amount="300">+300</button>
+        </div>
+        <form id="entryForm" class="entry-form">
+          <label>
+            <span>Миллилитры</span>
+            <input id="amountInput" inputmode="numeric" type="number" min="1" step="1" placeholder="100" required />
+          </label>
+          <label>
+            <span>Время</span>
+            <input id="timeInput" type="time" required />
+          </label>
+          <label class="wide">
+            <span>Заметка</span>
+            <input id="noteInput" type="text" maxlength="80" placeholder="например: утро / после еды / тяга" />
+          </label>
+          <button class="primary-btn wide" type="submit">Добавить</button>
+        </form>
+      </section>
+
+      <section class="stats-grid">
+        <article class="card stat-card">
+          <span>Среднее 7 дней</span>
+          <strong id="avg7">0 мл</strong>
+        </article>
+        <article class="card stat-card">
+          <span>Тренд к прошлой неделе</span>
+          <strong id="trend7">0 мл</strong>
+        </article>
+        <article class="card stat-card">
+          <span>Дней ниже цели</span>
+          <strong id="underTargetDays">0/7</strong>
+        </article>
+      </section>
+
+      <section class="card chart-card">
+        <div class="section-head">
+          <h2>График</h2>
+          <select id="rangeSelect" aria-label="Период графика">
+            <option value="7">7 дней</option>
+            <option value="14">14 дней</option>
+            <option value="30" selected>30 дней</option>
+            <option value="90">90 дней</option>
+          </select>
+        </div>
+        <canvas id="mainChart" width="720" height="360"></canvas>
+        <p class="chart-legend">Столбцы — мл в день. Линия — дневная цель.</p>
+      </section>
+
+      <section class="card settings-card">
+        <div class="section-head">
+          <h2>Настройки снижения</h2>
+        </div>
+        <div class="settings-grid">
+          <label>
+            <span>Дневная цель, мл</span>
+            <input id="targetInput" type="number" min="0" step="10" />
+          </label>
+          <label>
+            <span>Порог предупреждения, мл</span>
+            <input id="warningInput" type="number" min="0" step="10" />
+          </label>
+          <label>
+            <span>Быстрые кнопки, мл</span>
+            <input id="quickInput" type="text" placeholder="50,100,150,200,250,300" />
+          </label>
+          <button id="saveSettingsBtn" class="primary-btn" type="button">Сохранить</button>
+        </div>
+        <p class="muted small">Приложение только фиксирует объем. Схему снижения лучше согласовывать с врачом, особенно если есть другие препараты.</p>
+      </section>
+
+      <section class="card history-card">
+        <div class="section-head">
+          <h2>Сегодняшние записи</h2>
+          <button id="clearTodayBtn" class="danger-ghost" type="button">Очистить день</button>
+        </div>
+        <div id="todayEntries" class="entries-list"></div>
+      </section>
+
+      <section class="card days-card">
+        <div class="section-head">
+          <h2>Дни</h2>
+          <button id="exportCsvBtn" class="ghost-btn" type="button">CSV</button>
+        </div>
+        <div id="daysList" class="days-list"></div>
+      </section>
+
+      <section class="card backup-card">
+        <h2>Бэкап</h2>
+        <div class="backup-actions">
+          <button id="exportJsonBtn" class="ghost-btn" type="button">Экспорт JSON</button>
+          <label class="file-btn">
+            Импорт JSON
+            <input id="importJsonInput" type="file" accept="application/json,.json" />
+          </label>
+        </div>
+        <p class="muted small">Данные лежат в памяти браузера на телефоне. Делай экспорт, если меняешь iPhone, чистишь Safari или переносишь приложение.</p>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="installDialog">
+    <h2>Как поставить на iPhone</h2>
+    <ol>
+      <li>Открой эту страницу в Safari.</li>
+      <li>Нажми «Поделиться».</li>
+      <li>Выбери «На экран Домой».</li>
+      <li>Включи «Открывать как веб-приложение», если пункт есть.</li>
+    </ol>
+    <button id="closeInstallDialog" class="primary-btn" type="button">Понял</button>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>
