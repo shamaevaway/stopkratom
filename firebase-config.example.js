@@ -1,0 +1,8 @@
+window.TEA_TAPER_FIREBASE_CONFIG = {
+  apiKey: "...",
+  authDomain: "your-project.firebaseapp.com",
+  projectId: "your-project",
+  storageBucket: "your-project.appspot.com",
+  messagingSenderId: "...",
+  appId: "..."
+};

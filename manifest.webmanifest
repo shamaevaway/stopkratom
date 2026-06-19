@@ -1,16 +1,16 @@
 {
-  "name": "Tea Taper — Reduction Tracker",
+  "name": "Tea Taper — Kratom Reduction Tracker",
   "short_name": "Tea Taper",
-  "description": "Private offline-first tracker for reducing kratom tea intake with taper plan, wellbeing check-ins, analytics and backups.",
+  "description": "Private kratom tea reduction and wellbeing tracker. Not a medical device.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#f5f7f7",
-  "theme_color": "#0f766e",
+  "orientation": "portrait-primary",
+  "background_color": "#071019",
+  "theme_color": "#137d5a",
+  "categories": ["health", "lifestyle", "productivity"],
   "icons": [
-    {"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable"},
-    {"src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
-  ],
-  "categories": ["health", "lifestyle", "utilities"]
+    {"src":"icons/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},
+    {"src":"icons/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
+  ]
 }

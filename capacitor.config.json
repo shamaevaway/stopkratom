@@ -1,0 +1,14 @@
+{
+  "appId": "app.teataper.tracker",
+  "appName": "Tea Taper",
+  "webDir": ".",
+  "server": {
+    "androidScheme": "https"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchAutoHide": true,
+      "backgroundColor": "#071019"
+    }
+  }
+}

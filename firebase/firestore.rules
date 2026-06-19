@@ -1,0 +1,27 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function isOwner(userId) { return signedIn() && request.auth.uid == userId; }
+    function validDay() {
+      return request.resource.data.keys().hasOnly(['date','entries','metrics','morning','evening','triggers','helpers','relapse','note','closed','updatedAt','createdAt'])
+        && request.resource.data.date is string
+        && request.resource.data.entries is list
+        && request.resource.data.metrics is map
+        && request.resource.data.triggers is list
+        && request.resource.data.helpers is list
+        && request.resource.data.note is string;
+    }
+    match /users/{userId}/{document=**} {
+      allow read, write: if isOwner(userId);
+    }
+    match /users/{userId}/days/{dayId} {
+      allow read: if isOwner(userId);
+      allow create, update: if isOwner(userId) && validDay();
+      allow delete: if isOwner(userId);
+    }
+    match /users/{userId}/private/{docId} {
+      allow read, write, delete: if isOwner(userId);
+    }
+  }
+}

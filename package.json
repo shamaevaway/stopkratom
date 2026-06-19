@@ -1,0 +1,25 @@
+{
+  "name": "teataper-production",
+  "version": "4.0.0",
+  "private": true,
+  "description": "Tea Taper production PWA / Capacitor-ready kratom reduction tracker.",
+  "scripts": {
+    "serve": "npx http-server . -p 5173 -c-1",
+    "qa": "node scripts/qa-check.js",
+    "cap:init": "npx cap init TeaTaper app.teataper.tracker --web-dir .",
+    "cap:add:android": "npx cap add android",
+    "cap:add:ios": "npx cap add ios",
+    "cap:sync": "npx cap sync",
+    "cap:open:android": "npx cap open android",
+    "cap:open:ios": "npx cap open ios"
+  },
+  "dependencies": {
+    "@capacitor/android": "latest",
+    "@capacitor/cli": "latest",
+    "@capacitor/core": "latest",
+    "@capacitor/ios": "latest",
+    "firebase": "latest",
+    "http-server": "latest"
+  },
+  "devDependencies": {}
+}
