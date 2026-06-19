@@ -3,209 +3,326 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#0f172a" />
+  <meta name="theme-color" content="#0f766e" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="StopKratom" />
-  <title>StopKratom Tracker</title>
+  <meta name="apple-mobile-web-app-title" content="Tea Taper" />
+  <meta name="description" content="Private kratom tea reduction tracker. Offline-first PWA with taper plan, check-ins, wellbeing scores, analytics and backups." />
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
   <link rel="stylesheet" href="styles.css" />
+  <title>Tea Taper — private reduction tracker</title>
 </head>
 <body>
-  <div id="lockScreen" class="lock hidden">
-    <div class="lock-card">
-      <div class="brand-mark">SK</div>
-      <h1 data-i18n="lockTitle">Защищенный вход</h1>
-      <p data-i18n="lockHint">Введите PIN, чтобы открыть трекер.</p>
-      <input id="pinInput" class="pin-input" type="password" inputmode="numeric" maxlength="8" placeholder="PIN" />
-      <button id="unlockBtn" class="btn primary full" data-i18n="unlock">Открыть</button>
-      <button id="resetPinBtn" class="ghost danger" data-i18n="resetPin">Сбросить PIN</button>
+  <div id="ageGate" class="gate hidden">
+    <div class="gate-card">
+      <div class="app-logo">TT</div>
+      <h1 data-i18n="gateTitle">Tea Taper</h1>
+      <p class="lead" data-i18n="gateLead">Личный трекер снижения объема кратом-чая. Данные хранятся локально на устройстве.</p>
+      <div class="notice danger-soft">
+        <b data-i18n="medicalDisclaimerTitle">Не медицинское приложение</b>
+        <span data-i18n="medicalDisclaimerText">Приложение не ставит диагнозы, не назначает лечение и не заменяет консультацию врача.</span>
+      </div>
+      <label class="checkline"><input id="gateAge" type="checkbox" /> <span data-i18n="gateAge">Мне есть 18 лет</span></label>
+      <label class="checkline"><input id="gateTerms" type="checkbox" /> <span data-i18n="gateTerms">Я понимаю, что это только дневник и трекер привычки</span></label>
+      <button id="gateContinue" class="btn primary full" data-i18n="continue">Продолжить</button>
     </div>
+  </div>
+
+  <div id="onboarding" class="gate hidden">
+    <div class="gate-card wide">
+      <div class="app-logo">TT</div>
+      <h1 data-i18n="onboardingTitle">Настроим план</h1>
+      <p class="lead" data-i18n="onboardingLead">Укажи текущий средний объем и мягкий темп снижения. Всё можно изменить позже.</p>
+      <div class="form-grid two">
+        <label><span data-i18n="language">Язык</span><select id="onLang"><option value="ru">Русский</option><option value="en">English</option><option value="th">ไทย</option></select></label>
+        <label><span data-i18n="avgVolume">Сколько сейчас в среднем, мл/день</span><input id="onStartMl" type="number" inputmode="numeric" min="0" step="50" value="1000" /></label>
+        <label><span data-i18n="taperSpeed">Темп снижения в неделю</span><select id="onReduce"><option value="5">Мягко — 5%</option><option value="10" selected>Средне — 10%</option><option value="15">Быстрее — 15%</option></select></label>
+        <label><span data-i18n="firstGoal">Минимальная цель, мл</span><input id="onFloor" type="number" inputmode="numeric" min="0" step="50" value="0" /></label>
+      </div>
+      <button id="finishOnboarding" class="btn primary full" data-i18n="startTracking">Начать трекинг</button>
+    </div>
+  </div>
+
+  <div id="lock" class="lock hidden" aria-live="polite">
+    <div class="lock-card">
+      <div class="app-logo">TT</div>
+      <h1>Tea Taper</h1>
+      <p data-i18n="pinPrompt">Введите PIN-код</p>
+      <input id="pinInput" class="pin-input" type="password" inputmode="numeric" maxlength="8" placeholder="••••" />
+      <button id="unlockBtn" class="btn primary full" data-i18n="unlock">Открыть</button>
+      <button id="hardResetBtn" class="link-btn danger" data-i18n="forgotPin">Забыли PIN? Сбросить приложение</button>
+    </div>
+  </div>
+
+  <div id="updateBanner" class="update-banner hidden">
+    <span data-i18n="updateReady">Доступна новая версия приложения</span>
+    <button id="reloadAppBtn" class="btn small primary" data-i18n="update">Обновить</button>
   </div>
 
   <div id="app" class="app-shell">
     <header class="topbar">
-      <div>
-        <div class="eyebrow" data-i18n="appEyebrow">личный трекер снижения</div>
-        <h1>StopKratom</h1>
+      <div class="brand-block">
+        <div class="app-logo mini">TT</div>
+        <div>
+          <div class="eyebrow" data-i18n="eyebrow">PRIVATE REDUCTION TRACKER</div>
+          <h1>Tea Taper</h1>
+        </div>
       </div>
       <div class="top-actions">
-        <button id="themeToggle" class="icon-btn" aria-label="Theme">◐</button>
-        <button id="openSettings" class="icon-btn" aria-label="Settings">⚙</button>
+        <button id="installBtn" class="icon-btn hidden" title="Install">⬇</button>
+        <button id="shareAppBtn" class="icon-btn" title="Share">↗</button>
+        <button id="themeBtn" class="icon-btn" title="Theme">◐</button>
       </div>
     </header>
 
-    <section class="disclaimer" id="disclaimerBox">
-      <div>
-        <strong data-i18n="disclaimerTitle">Важно</strong>
-        <span data-i18n="disclaimerText">Это дневник учета, не медицинская схема лечения. При сильной отмене, боли, спутанности, судорогах или резком ухудшении — обратись к врачу.</span>
-      </div>
-      <button id="hideDisclaimer" class="ghost" data-i18n="ok">Ок</button>
-    </section>
+    <main class="main">
+      <section id="view-home" class="view active">
+        <div class="hero-card app-card">
+          <div class="date-nav">
+            <button id="prevDay" class="icon-btn">‹</button>
+            <button id="datePickerBtn" class="date-pill"><span id="selectedDateLabel"></span></button>
+            <input id="dateInput" type="date" class="hidden" />
+            <button id="nextDay" class="icon-btn">›</button>
+          </div>
+          <div class="hero-layout">
+            <div class="hero-number">
+              <span class="metric-label" data-i18n="dailyTotal">Всего за день</span>
+              <strong><span id="dayTotal">0</span><small> мл</small></strong>
+              <p id="goalText" class="mini-note"></p>
+            </div>
+            <div class="ring-wrap">
+              <canvas id="progressRing" width="144" height="144"></canvas>
+              <div class="ring-center"><b id="ringPct">0%</b><span data-i18n="ofGoal">цели</span></div>
+            </div>
+          </div>
+          <div id="riskStrip" class="risk-strip"></div>
+        </div>
 
-    <nav class="tabs" aria-label="Sections">
-      <button class="tab active" data-tab="today" data-i18n="tabToday">День</button>
-      <button class="tab" data-tab="analytics" data-i18n="tabAnalytics">Графики</button>
-      <button class="tab" data-tab="plan" data-i18n="tabPlan">План</button>
-      <button class="tab" data-tab="journal" data-i18n="tabJournal">Журнал</button>
-      <button class="tab" data-tab="data" data-i18n="tabData">Данные</button>
-    </nav>
+        <div class="app-card">
+          <div class="section-head compact-head">
+            <div><h2 data-i18n="quickAdd">Быстро добавить</h2><p data-i18n="quickAddNote">Выбери объем или открой расширенную форму</p></div>
+            <button id="openEntryBtn" class="btn ghost" data-i18n="manual">Вручную</button>
+          </div>
+          <div id="quickButtons" class="quick-grid"></div>
+        </div>
 
-    <main>
-      <section id="today" class="panel active">
-        <div class="date-card glass">
-          <button id="prevDay" class="date-nav">‹</button>
+        <div class="app-card">
+          <div class="section-head compact-head">
+            <div><h2 data-i18n="entries">Записи дня</h2><p data-i18n="entriesNote">Нажми на запись, чтобы изменить объем, время или заметку</p></div>
+            <button id="clearDayBtn" class="btn ghost danger" data-i18n="clearDay">Очистить</button>
+          </div>
+          <div id="entriesList" class="list empty-friendly"></div>
+        </div>
+
+        <div class="app-card">
+          <h2 data-i18n="dailyNote">Заметка дня</h2>
+          <textarea id="dayNote" rows="4" data-i18n-placeholder="notePlaceholder" placeholder="Что повлияло сегодня: сон, стресс, работа, спорт, боль, окружение..."></textarea>
+        </div>
+      </section>
+
+      <section id="view-checkin" class="view">
+        <div class="app-card score-card">
           <div>
-            <label data-i18n="selectedDate">Выбранный день</label>
-            <input id="datePicker" type="date" />
-            <div id="dateLabel" class="date-label"></div>
+            <span class="metric-label" data-i18n="wellbeingIndex">Индекс самочувствия</span>
+            <strong><span id="wellbeingScore">—</span><small>/100</small></strong>
           </div>
-          <button id="nextDay" class="date-nav">›</button>
+          <p id="wellbeingHint" class="mini-note"></p>
         </div>
 
-        <div class="hero-grid">
-          <div class="stat-card hero">
-            <span data-i18n="todayTotal">Всего за день</span>
-            <strong><span id="dayTotal">0</span> мл</strong>
-            <div class="progress"><div id="targetProgress"></div></div>
-            <small id="targetText">0 / 1000 мл</small>
+        <div class="app-card">
+          <div class="section-head compact-head">
+            <div><h2 data-i18n="morningEvening">Утро / вечер</h2><p data-i18n="morningEveningNote">Быстрая фиксация риска дня и итогов дня</p></div>
           </div>
-          <div class="stat-card">
-            <span data-i18n="planStatus">Статус плана</span>
-            <strong id="planBadge">—</strong>
-            <small id="planHint">—</small>
+          <div class="checkin-grid">
+            <button id="morningCheckinBtn" class="tool-card"><b data-i18n="morningCheckin">Утренний чек-ин</b><span id="morningStatus">—</span></button>
+            <button id="eveningCheckinBtn" class="tool-card"><b data-i18n="eveningCheckin">Вечерний чек-ин</b><span id="eveningStatus">—</span></button>
+            <button id="relapseBtn" class="tool-card danger-card"><b data-i18n="relapseFlow">Срыв / превышение</b><span data-i18n="relapseDesc">Разобрать причину без обнуления прогресса</span></button>
           </div>
         </div>
 
-        <div class="card">
-          <div class="card-head">
-            <h2 data-i18n="quickAdd">Быстро добавить</h2>
-            <button id="editButtons" class="ghost" data-i18n="editButtons">Кнопки</button>
+        <div class="app-card">
+          <div class="section-head compact-head">
+            <div><h2 data-i18n="wellbeingScales">Самочувствие 0–10</h2><p data-i18n="scaleNote">У каждой шкалы есть понятные края: 0 и 10</p></div>
           </div>
-          <div id="quickButtons" class="quick-buttons"></div>
-          <form id="addForm" class="add-form">
-            <input id="amountInput" type="number" min="1" max="10000" inputmode="decimal" placeholder="100" required />
-            <input id="timeInput" type="time" />
-            <input id="noteInput" type="text" maxlength="80" data-i18n-placeholder="notePlaceholder" placeholder="Заметка: причина / место" />
-            <button class="btn primary" data-i18n="add">Добавить</button>
-          </form>
+          <div id="healthGrid" class="health-grid"></div>
         </div>
 
-        <div class="card">
-          <div class="card-head">
-            <h2 data-i18n="entries">Записи дня</h2>
-            <button id="clearDay" class="ghost danger" data-i18n="clearDay">Очистить день</button>
-          </div>
-          <div id="entriesList" class="entries"></div>
+        <div class="app-card">
+          <h2 data-i18n="triggers">Что повышало тягу</h2>
+          <div id="triggerGrid" class="chip-grid"></div>
         </div>
 
-        <div class="card">
-          <div class="card-head">
-            <h2 data-i18n="symptoms">Самочувствие</h2>
-            <button id="saveSymptoms" class="ghost" data-i18n="save">Сохранить</button>
+        <div class="app-card">
+          <h2 data-i18n="helpers">Что помогало снизить</h2>
+          <div id="helperGrid" class="chip-grid"></div>
+        </div>
+
+        <div class="app-card">
+          <h2 data-i18n="antiCraving">Антисрыв-инструменты</h2>
+          <div class="tool-grid">
+            <button id="urgeTimerBtn" class="tool-card"><b data-i18n="urgeTimer">10 минут пауза</b><span data-i18n="urgeTimerDesc">Отложить решение на пик тяги</span></button>
+            <button id="breathBtn" class="tool-card"><b data-i18n="breathing">Дыхание 4–4–6</b><span data-i18n="breathingDesc">2 минуты стабилизации</span></button>
+            <button id="copyCrisisBtn" class="tool-card"><b data-i18n="copyCrisis">План на момент тяги</b><span data-i18n="copyCrisisDesc">Скопировать короткий протокол</span></button>
           </div>
-          <div class="symptom-grid">
-            <label><span data-i18n="sleep">Сон</span><input id="sleepScore" type="range" min="0" max="10" /></label>
-            <label><span data-i18n="craving">Тяга</span><input id="cravingScore" type="range" min="0" max="10" /></label>
-            <label><span data-i18n="energy">Энергия</span><input id="energyScore" type="range" min="0" max="10" /></label>
-            <label><span data-i18n="mood">Настроение</span><input id="moodScore" type="range" min="0" max="10" /></label>
-          </div>
-          <textarea id="journalNote" rows="3" maxlength="500" data-i18n-placeholder="journalPlaceholder" placeholder="Короткая заметка по дню"></textarea>
+          <div id="timerBox" class="timer-box hidden"></div>
         </div>
       </section>
 
-      <section id="analytics" class="panel">
-        <div class="stats-row">
-          <div class="stat-card"><span data-i18n="avg7">Среднее 7 дней</span><strong id="avg7">0 мл</strong></div>
-          <div class="stat-card"><span data-i18n="trend">Тренд</span><strong id="trendText">—</strong></div>
-          <div class="stat-card"><span data-i18n="streak">Серия</span><strong id="streakText">0</strong></div>
+      <section id="view-progress" class="view">
+        <div class="stat-row">
+          <div class="stat"><span data-i18n="avgRecorded">Среднее по записям</span><b id="avgRecorded">—</b></div>
+          <div class="stat"><span data-i18n="coverage">Заполнено</span><b id="coverageText">—</b></div>
+          <div class="stat"><span data-i18n="streak">Серия в цели</span><b id="streakText">—</b></div>
         </div>
-        <div class="card">
-          <div class="card-head">
-            <h2 data-i18n="volumeChart">Объем и цель</h2>
-            <select id="rangeSelect">
-              <option value="7">7</option>
-              <option value="14">14</option>
-              <option value="30" selected>30</option>
-              <option value="90">90</option>
-            </select>
+        <div class="app-card">
+          <div class="section-head compact-head">
+            <div><h2 data-i18n="volumeChart">Объем, цель, средняя</h2><p data-i18n="volumeChartNote">Пустые дни серые и не считаются как успех</p></div>
+            <select id="rangeSelect" class="select"><option value="7">7 дней</option><option value="14">14 дней</option><option value="30" selected>30 дней</option><option value="90">90 дней</option></select>
           </div>
-          <canvas id="volumeChart" height="260"></canvas>
+          <canvas id="volumeChart" width="760" height="360" class="chart"></canvas>
+          <div class="legend"><span><i class="dot primary"></i>Факт</span><span><i class="dot muted"></i>Цель</span><span><i class="dot avg"></i>7д средняя</span></div>
         </div>
-        <div class="card">
-          <div class="card-head"><h2 data-i18n="calendar">Календарь прогресса</h2></div>
-          <div id="heatmap" class="heatmap"></div>
+        <div class="app-card">
+          <h2 data-i18n="wellbeingChart">Индекс самочувствия</h2>
+          <canvas id="healthChart" width="760" height="280" class="chart"></canvas>
         </div>
-        <div class="card">
-          <div class="card-head"><h2 data-i18n="symptomChart">Самочувствие / тяга</h2></div>
-          <canvas id="symptomChart" height="220"></canvas>
+        <div class="app-card">
+          <h2 data-i18n="calendar">Календарь прогресса</h2>
+          <div id="calendarGrid" class="calendar-grid"></div>
+          <div class="calendar-legend"><span><i class="cal empty"></i>нет данных</span><span><i class="cal good"></i>в цели</span><span><i class="cal warn"></i>около цели</span><span><i class="cal bad"></i>выше</span></div>
+        </div>
+        <div class="app-card">
+          <div class="section-head compact-head"><div><h2 data-i18n="insights">Инсайты</h2><p data-i18n="insightsNote">Что чаще связано с превышением и снижением</p></div></div>
+          <div id="insightsBox" class="insights"></div>
+        </div>
+        <div class="app-card">
+          <div class="section-head compact-head"><div><h2 data-i18n="weeklyReport">Недельный отчет</h2><p data-i18n="weeklyReportNote">Можно отправить себе или специалисту</p></div><button id="copyReportBtn" class="btn ghost" data-i18n="copy">Копировать</button></div>
+          <div id="weeklyReportBox" class="report-box"></div>
+        </div>
+        <div class="app-card">
+          <h2 data-i18n="history">История</h2>
+          <div id="historyList" class="history-list"></div>
         </div>
       </section>
 
-      <section id="plan" class="panel">
-        <div class="card">
-          <div class="card-head"><h2 data-i18n="taperPlan">План снижения</h2></div>
-          <div class="form-grid">
-            <label><span data-i18n="dailyTarget">Дневная цель, мл</span><input id="dailyTarget" type="number" min="0" max="10000" /></label>
-            <label><span data-i18n="baseline">Стартовый уровень, мл/день</span><input id="baseline" type="number" min="0" max="10000" /></label>
-            <label><span data-i18n="weeklyReduction">Снижение в неделю, %</span><input id="weeklyReduction" type="number" min="0" max="50" /></label>
-            <label><span data-i18n="startDate">Дата старта</span><input id="startDate" type="date" /></label>
+      <section id="view-plan" class="view">
+        <div class="app-card">
+          <h2 data-i18n="planTitle">План снижения</h2>
+          <div class="form-grid two">
+            <label><span data-i18n="startDate">Дата старта</span><input id="planStartDate" type="date" /></label>
+            <label><span data-i18n="startVolume">Стартовый объем, мл/день</span><input id="planStartMl" type="number" min="0" step="10" /></label>
+            <label><span data-i18n="weeklyReduce">Снижение в неделю, %</span><input id="planReducePct" type="number" min="0" max="50" step="1" /></label>
+            <label><span data-i18n="floorGoal">Минимальная цель, мл</span><input id="planFloorMl" type="number" min="0" step="10" /></label>
+            <label><span data-i18n="adaptivePlan">Адаптивный режим</span><select id="adaptivePlan"><option value="false">Выкл</option><option value="true">Вкл: мягкая неделя после превышений</option></select></label>
+            <label><span data-i18n="plateauDays">Плато после срыва, дней</span><input id="plateauDays" type="number" min="0" max="14" step="1" /></label>
           </div>
-          <button id="savePlan" class="btn primary full" data-i18n="savePlan">Сохранить план</button>
+          <button id="savePlanBtn" class="btn primary full" data-i18n="savePlan">Сохранить план</button>
         </div>
-        <div class="card">
-          <div class="card-head"><h2 data-i18n="forecast">Прогноз</h2></div>
-          <div id="forecastList" class="forecast"></div>
+        <div class="app-card">
+          <h2 data-i18n="planPreview">Прогноз на 8 недель</h2>
+          <div id="planPreview" class="plan-preview"></div>
         </div>
-        <div class="card">
-          <div class="card-head"><h2 data-i18n="achievements">Достижения</h2></div>
-          <div id="achievements" class="badges"></div>
+        <div class="app-card warning-card">
+          <h2 data-i18n="safetyTitle">Безопасность</h2>
+          <p data-i18n="safetyText">Если состояние резко ухудшается, появляются сильная слабость, спутанность, боль в груди, проблемы с дыханием или тяжелые симптомы отмены — лучше обратиться за медицинской помощью.</p>
         </div>
       </section>
 
-      <section id="journal" class="panel">
-        <div class="card">
-          <div class="card-head"><h2 data-i18n="history">История</h2></div>
-          <div id="historyList" class="history"></div>
-        </div>
-      </section>
-
-      <section id="data" class="panel">
-        <div class="card">
-          <div class="card-head"><h2 data-i18n="backup">Бэкап и перенос</h2></div>
-          <div class="data-actions">
-            <button id="exportJson" class="btn" data-i18n="exportJson">Экспорт JSON</button>
-            <button id="exportCsv" class="btn" data-i18n="exportCsv">Экспорт CSV</button>
-            <button id="copySummary" class="btn" data-i18n="copySummary">Сводка</button>
-            <label class="btn file-btn"><span data-i18n="importJson">Импорт JSON</span><input id="importFile" type="file" accept="application/json" /></label>
+      <section id="view-more" class="view">
+        <div class="app-card">
+          <h2 data-i18n="settings">Настройки</h2>
+          <div class="form-grid two">
+            <label><span data-i18n="language">Язык</span><select id="languageSelect"><option value="ru">Русский</option><option value="en">English</option><option value="th">ไทย</option></select></label>
+            <label><span data-i18n="theme">Тема</span><select id="themeSelect"><option value="system">Системная</option><option value="light">Светлая</option><option value="dark">Темная</option></select></label>
+            <label><span data-i18n="quickAmounts">Быстрые кнопки, мл</span><input id="quickAmountsInput" type="text" placeholder="50,100,150,200,250,300" /></label>
+            <label><span data-i18n="backupEvery">Напоминать о бэкапе, дней</span><input id="backupDays" type="number" min="1" max="60" step="1" /></label>
+            <label><span data-i18n="pinCode">PIN-код</span><input id="pinSetInput" type="password" inputmode="numeric" maxlength="8" placeholder="оставить пустым" /></label>
+            <label><span data-i18n="reminders">Напоминания</span><input id="reminderTime" type="time" /></label>
           </div>
+          <p class="mini-note" data-i18n="pwaReminderNote">В PWA на iPhone напоминания могут быть нестабильны. Для надежных пушей нужна нативная версия.</p>
+          <button id="saveSettingsBtn" class="btn primary full" data-i18n="saveSettings">Сохранить настройки</button>
         </div>
-        <div class="card danger-zone">
-          <div class="card-head"><h2 data-i18n="dangerZone">Опасная зона</h2></div>
-          <button id="wipeData" class="btn danger" data-i18n="wipeData">Удалить все данные</button>
+        <div class="app-card">
+          <h2 data-i18n="shareTitle">Поделиться приложением</h2>
+          <p data-i18n="shareText">Каждый пользователь будет вести свои локальные данные. Твоя история не передается по ссылке.</p>
+          <div class="row wrap"><button id="shareAppBtn2" class="btn primary" data-i18n="shareApp">Поделиться ссылкой</button><button id="copyLinkBtn" class="btn ghost" data-i18n="copyLink">Скопировать ссылку</button></div>
+        </div>
+        <div class="app-card">
+          <h2 data-i18n="dataBackup">Данные и бэкап</h2>
+          <div class="row wrap"><button id="exportJsonBtn" class="btn ghost" data-i18n="exportJson">Экспорт JSON</button><button id="exportCsvBtn" class="btn ghost" data-i18n="exportCsv">Экспорт CSV</button><label class="btn ghost file-label"><span data-i18n="importJson">Импорт JSON</span><input id="importInput" type="file" accept="application/json,.json" /></label></div>
+          <p id="backupStatus" class="mini-note"></p>
+        </div>
+        <div class="app-card legal-card">
+          <h2 data-i18n="legal">Privacy / Terms / Disclaimer</h2>
+          <div class="legal-tabs">
+            <button data-legal="privacy" class="active">Privacy</button>
+            <button data-legal="terms">Terms</button>
+            <button data-legal="disclaimer">Disclaimer</button>
+            <button data-legal="install">Install</button>
+          </div>
+          <div id="legalText" class="legal-text"></div>
+        </div>
+        <div class="app-card danger-zone">
+          <h2 data-i18n="dangerZone">Опасная зона</h2>
+          <p data-i18n="dangerText">Сброс удалит локальную историю на этом устройстве. Сделай экспорт JSON перед сбросом.</p>
+          <button id="resetAllBtn" class="btn danger" data-i18n="resetAll">Удалить все данные</button>
         </div>
       </section>
     </main>
+
+    <nav class="bottom-nav" aria-label="Bottom navigation">
+      <button class="nav-btn active" data-view="home"><span>⌂</span><b data-i18n="navHome">День</b></button>
+      <button class="nav-btn" data-view="checkin"><span>◌</span><b data-i18n="navCheckin">Чек-ин</b></button>
+      <button class="nav-btn" data-view="progress"><span>⌁</span><b data-i18n="navProgress">Прогресс</b></button>
+      <button class="nav-btn" data-view="plan"><span>→</span><b data-i18n="navPlan">План</b></button>
+      <button class="nav-btn" data-view="more"><span>⋯</span><b data-i18n="navMore">Еще</b></button>
+    </nav>
   </div>
 
-  <dialog id="settingsDialog">
-    <form method="dialog" class="dialog-card">
-      <div class="card-head">
-        <h2 data-i18n="settings">Настройки</h2>
-        <button class="icon-btn">×</button>
+  <div id="entrySheet" class="sheet hidden" role="dialog" aria-modal="true">
+    <div class="sheet-backdrop" data-close-sheet></div>
+    <div class="sheet-panel">
+      <div class="sheet-handle"></div>
+      <div class="section-head"><div><h2 id="entrySheetTitle" data-i18n="entrySheetTitle">Запись приема</h2><p data-i18n="entrySheetNote">Можно менять дату, время, объем и комментарий</p></div><button class="icon-btn" data-close-sheet>×</button></div>
+      <input id="entryId" type="hidden" />
+      <div class="form-grid two">
+        <label><span data-i18n="date">Дата</span><input id="entryDate" type="date" /></label>
+        <label><span data-i18n="time">Время</span><input id="entryTime" type="time" /></label>
+        <label><span data-i18n="volumeMl">Объем, мл</span><input id="entryMl" type="number" inputmode="numeric" min="0" step="1" /></label>
+        <label><span data-i18n="entryNote">Комментарий</span><input id="entryNote" type="text" maxlength="120" placeholder="например: после работы" /></label>
       </div>
-      <div class="form-grid">
-        <label><span data-i18n="language">Язык</span><select id="language"><option value="ru">Русский</option><option value="en">English</option><option value="th">ไทย</option></select></label>
-        <label><span data-i18n="pinCode">PIN-код</span><input id="newPin" type="password" inputmode="numeric" maxlength="8" placeholder="не задан" /></label>
-        <label><span data-i18n="reminderTime">Напоминание</span><input id="reminderTime" type="time" /></label>
-        <label><span data-i18n="quickAmounts">Быстрые кнопки, мл</span><input id="quickAmounts" type="text" placeholder="50,100,150,200" /></label>
-      </div>
-      <button id="saveSettings" class="btn primary full" value="default" data-i18n="saveSettings">Сохранить настройки</button>
-    </form>
-  </dialog>
+      <div class="row wrap"><button id="saveEntryBtn" class="btn primary" data-i18n="save">Сохранить</button><button id="deleteEntryBtn" class="btn danger ghost" data-i18n="delete">Удалить</button></div>
+    </div>
+  </div>
 
-  <div id="toast" class="toast"></div>
+  <div id="checkinSheet" class="sheet hidden" role="dialog" aria-modal="true">
+    <div class="sheet-backdrop" data-close-sheet></div>
+    <div class="sheet-panel">
+      <div class="sheet-handle"></div>
+      <div class="section-head"><div><h2 id="checkinTitle">Чек-ин</h2><p id="checkinSub" class="mini-note"></p></div><button class="icon-btn" data-close-sheet>×</button></div>
+      <input id="checkinType" type="hidden" />
+      <div id="checkinScaleBox" class="compact-scales"></div>
+      <textarea id="checkinNote" rows="3" placeholder="Короткая заметка"></textarea>
+      <button id="saveCheckinBtn" class="btn primary full" data-i18n="saveCheckin">Сохранить чек-ин</button>
+    </div>
+  </div>
+
+  <div id="relapseSheet" class="sheet hidden" role="dialog" aria-modal="true">
+    <div class="sheet-backdrop" data-close-sheet></div>
+    <div class="sheet-panel">
+      <div class="sheet-handle"></div>
+      <div class="section-head"><div><h2 data-i18n="relapseTitle">Разбор превышения</h2><p data-i18n="relapseSub">Один день не обнуляет прогресс. Важно понять причину.</p></div><button class="icon-btn" data-close-sheet>×</button></div>
+      <label><span data-i18n="relapseReason">Что было главным триггером?</span><select id="relapseReason"></select></label>
+      <label><span data-i18n="relapseMl">Сколько примерно дополнительно, мл?</span><input id="relapseMl" type="number" min="0" step="10" /></label>
+      <label><span data-i18n="tomorrowPlan">План на завтра</span><select id="tomorrowPlan"><option value="return">Вернуться к цели</option><option value="plateau">Мягкий день / плато</option><option value="lower">Снизить риск: сон, еда, вода, прогулка</option></select></label>
+      <textarea id="relapseNote" rows="3" placeholder="Что сделать иначе завтра?"></textarea>
+      <button id="saveRelapseBtn" class="btn primary full" data-i18n="saveRelapse">Сохранить без самокритики</button>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+
   <script src="app.js"></script>
 </body>
 </html>

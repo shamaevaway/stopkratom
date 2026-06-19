@@ -1,38 +1,45 @@
-# StopKratom Tracker — Production PWA
+# Tea Taper — StopKratom Production PWA v3
 
-Локальное PWA-приложение для учета кратомного чая и постепенного снижения объема.
+Offline-first PWA for tracking kratom tea reduction. Data stays locally on the user's device.
 
-## Установка через GitHub Pages
+## Production changes in v3
 
-1. Распакуйте ZIP.
-2. Загрузите содержимое папки в корень GitHub-репозитория.
-3. Откройте `Settings → Pages`.
-4. Выберите `Deploy from a branch → main → /root`.
-5. Откройте ссылку GitHub Pages на iPhone через Safari.
-6. Нажмите `Share → Add to Home Screen`.
+- Fixed read-only analytics: charts, calendar, streaks and averages do not create empty days.
+- Empty days are neutral/gray and are not counted as success.
+- Correct streak logic: only consecutive recorded days within target count.
+- Bottom-sheet entry editor instead of browser prompt.
+- Date/time/ml/note editing for every intake entry.
+- Onboarding with 18+ gate, disclaimer and initial taper plan.
+- Bottom mobile navigation: Day, Check-in, Progress, Plan, More.
+- 15 wellbeing scales with explicit 0–10 buttons and anchor descriptions.
+- Morning and evening check-ins.
+- Relapse/over-goal review flow without shaming language.
+- Triggers and helpers tracking.
+- Insights: top triggers/helpers and sleep-related observations.
+- Weekly report copy/share.
+- Enhanced CSV with UTF-8 BOM and health columns.
+- JSON backup/import.
+- PIN stored as hash + salt, not as plain text.
+- Privacy / Terms / Disclaimer / Install guide inside app.
+- PWA update banner and improved service worker cache versioning.
+- RU / EN / TH localization for core UI.
 
-## Что добавлено в версии 2
+## Deploy to GitHub Pages
 
-1. Редактирование любого дня, включая вчерашний.
-2. Выбор даты через календарь и кнопки день назад / вперед.
-3. Редактирование и удаление отдельных приемов.
-4. План снижения: стартовый объем, недельный процент снижения, целевой график.
-5. График факт/цель за 7/14/30/90 дней.
-6. Календарь прогресса с тепловой картой.
-7. Трекинг самочувствия: сон, тяга, энергия, настроение.
-8. Журнал заметок по каждому дню.
-9. История всех дней с быстрым переходом к редактированию.
-10. Экспорт JSON, экспорт CSV, импорт бэкапа.
-11. Локальный PIN-код.
-12. Темная/светлая тема.
-13. RU/EN/TH интерфейс.
-14. Настраиваемые быстрые кнопки.
-15. Offline-first через service worker.
+Upload the contents of this folder to the root of your repository. `index.html` must be in the repository root.
 
-## Приватность
+Then: Settings → Pages → Deploy from branch → main → /root → Save.
 
-Данные хранятся локально в браузере пользователя через `localStorage`. Сервер не используется.
+## Data compatibility
 
-## Дисклеймер
+The app migrates data from previous keys where possible:
 
-Приложение является дневником учета и не является медицинской рекомендацией, диагностикой или лечением.
+- `stopkratom.ultra.v2`
+- `stopkratom.production.v1`
+- `kratomLog.entries.v1`
+
+Before updating a live install, export JSON as a backup.
+
+## Disclaimer
+
+This is not a medical device. It does not diagnose, treat, prescribe, or replace medical advice.
